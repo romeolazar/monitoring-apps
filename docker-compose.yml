@@ -16,9 +16,6 @@ networks:
   internal-network:
     driver: bridge
     name: monitoring_network
-    ipam:
-      config:
-        - subnet: 10.3.0.0/16
 
 services:
   #scrutiny - monitor HDD.
