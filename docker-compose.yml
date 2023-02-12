@@ -11,7 +11,7 @@ volumes:
   speedtest:
     name: speedtest
 
-#we put all containers under the same newtwork
+#we put all containers under the same network
 networks:
   internal-network:
     driver: bridge
