@@ -1,0 +1,86 @@
+version: '2'
+
+#here we create the volumes. We keep the same names for backup purpouses
+volumes:
+  scrutiny:
+    name: scrutiny
+  scrutiny_db:
+    name: scrutiny_db
+  uptime-kuma:
+    name: uptime-kuma
+  speedtest:
+    name: speedtest
+
+#we put all containers under the same newtwork
+networks:
+  internal-network:
+    driver: bridge
+    name: monitoring_network
+    ipam:
+      config:
+        - subnet: 10.3.0.0/16
+
+services:
+  #scrutiny - monitor HDD.
+  # run this after deployment: docker exec -it scrutiny scrutiny-collector-metrics run
+  scrutiny:
+    image: ghcr.io/analogj/scrutiny:master-omnibus
+    container_name: scrutiny
+    cap_add:
+      - SYS_RAWIO
+    #      - SYS_ADMIN #optional if you have nvme
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /run/udev:/run/udev:ro
+      - scrutiny:/opt/scrutiny/config
+      - scrutiny_db:/opt/scrutiny/influxdb
+    ports:
+      - 8082:8080 # webapp
+      - 8086:8086 # influxDB admin
+    devices:
+      - /dev/sda:/dev/sda
+      - /dev/sdb:/dev/sdb
+      - /dev/sdc:/dev/sdc
+      - /dev/sdd:/dev/sdd
+      - /dev/sde:/dev/sde
+    networks:
+      - internal-network
+    restart: unless-stopped
+  #uptime-kumo monitor
+  uptime-kuma:
+    container_name: uptime-kuma
+    image: louislam/uptime-kuma:1
+    volumes:
+      - uptime-kuma:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 3201:3001
+    networks:
+      - internal-network
+    restart: always
+  # Speedtest Tracker - This program runs a speedtest check every hour and graphs the results.
+  speedtest:
+    container_name: speedtest
+    image: henrywhitaker3/speedtest-tracker
+    ports:
+      - 8765:80
+    volumes:
+      - speedtest:/config
+    environment:
+      - TZ=${TZ}
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - OOKLA_EULA_GDPR=true
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "200k"
+    networks:
+      - internal-network
+    restart: unless-stopped
