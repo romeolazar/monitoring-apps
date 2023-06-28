@@ -27,6 +27,7 @@ DockerHub: [henrywhitaker3/speedtest-tracker](https://hub.docker.com/r/henrywhit
 GitHub: [henrywhitaker3/speedtest-tracker](https://github.com/henrywhitaker3/Speedtest-Tracker)
 
 ## Info
+Make sure you uncomment drives for scrutiny.
 Because all the services are setup with `docker-compose` they can all reach each other by their Docker Compose service name. So for example when connecting Sonarr with Jacket or qBittorrent, then Jackett would be available on `http://jackett/api....`, which makes everything a lot easier.
 
 ### Edit the .env file

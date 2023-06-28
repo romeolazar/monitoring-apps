@@ -14,8 +14,7 @@ volumes:
 #we put all containers under the same network
 networks:
   internal-network:
-    driver: bridge
-    name: monitoring_network
+    external: true
 
 services:
   #scrutiny - monitor HDD.
