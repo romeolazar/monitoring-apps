@@ -40,8 +40,8 @@ services:
     devices:
 # uncomment based on your drives number
       - /dev/sda:/dev/sda
-      - /dev/sdb:/dev/sdb
-      - /dev/sdc:/dev/sdc
+#      - /dev/sdb:/dev/sdb
+#      - /dev/sdc:/dev/sdc
 #      - /dev/sdd:/dev/sdd
 #      - /dev/sde:/dev/sde
     networks:
